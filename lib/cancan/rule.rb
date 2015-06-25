@@ -32,6 +32,8 @@ module CanCan
         call_block_with_all(action, subject, extra_args)
       elsif @block && !subject_class?(subject)
         @block.call(subject, *extra_args)
+      elsif @block && subject_class?(subject)
+        raise ArgumentError, "The block used to define an ability are ignored when checked with a class instead of an instance."
       elsif @conditions.kind_of?(Hash) && subject.class == Hash
         nested_subject_matches_conditions?(subject)
       elsif @conditions.kind_of?(Hash) && !subject_class?(subject)

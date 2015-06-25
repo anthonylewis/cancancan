@@ -23,12 +23,12 @@ describe CanCan::Ability do
     expect(@ability.can?(:read, :some_symbol)).to be(true)
   end
 
-  it "passes nil to a block when no instance is passed" do
+  it "raises ArgumentError when `can` has a block and an instance is not passed" do
     @ability.can :read, Symbol do |sym|
       expect(sym).to be_nil
       true
     end
-    expect(@ability.can?(:read, Symbol)).to be(true)
+    expect { @ability.can?(:read, Symbol) }.to raise_error(ArgumentError)
   end
 
   it "passes to previous rule, if block returns false or nil" do
@@ -54,12 +54,12 @@ describe CanCan::Ability do
     expect(@block_called).to be(true)
   end
 
-  it "does not call block when only class is passed, only return true" do
+  it "does not call block when only class is passed, only raise ArgumentError" do
     @block_called = false
     @ability.can :preview, :all do |object|
       @block_called = true
     end
-    expect(@ability.can?(:preview, Hash)).to be(true)
+    expect { @ability.can?(:preview, Hash) }.to raise_error(ArgumentError)
     expect(@block_called).to be(false)
   end
 
@@ -323,15 +323,15 @@ describe CanCan::Ability do
     expect(@ability.can?(:read, A.new)).to be(true)
   end
 
-  it "passes nil to a block for ability on Module when no instance is passed" do
+  it "raises ArgumentError when a block for ability on Module and no instance is passed" do
     module B; end
     class A; include B; end
     @ability.can :read, B do |sym|
       expect(sym).to be_nil
       true
     end
-    expect(@ability.can?(:read, B)).to be(true)
-    expect(@ability.can?(:read, A)).to be(true)
+    expect { @ability.can?(:read, B) }.to raise_error(ArgumentError)
+    expect { @ability.can?(:read, A) }.to raise_error(ArgumentError)
   end
 
   it "checks permissions through association when passing a hash of subjects" do
